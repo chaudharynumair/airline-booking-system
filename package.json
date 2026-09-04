@@ -15,9 +15,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@libsql/win32-x64-msvc": "^0.5.29",
     "better-sqlite3": "12.11.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "libsql": "^0.5.29",
     "multer": "^2.3.0",
     "socket.io": "^4.8.3"
   }

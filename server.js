@@ -8,7 +8,7 @@ const express = require("express");
 const multer = require("multer");
 const http = require("http");
 const { Server } = require("socket.io");
-const Database = require("better-sqlite3");
+const Database = require("libsql");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
@@ -122,12 +122,19 @@ const uploadPaymentProof = multer({
    DATABASE
 ========================================================= */
 
-const dbPath = path.join(__dirname, "airflow.db");
+const isTurso =
+    process.env.TURSO_DATABASE_URL &&
+    process.env.TURSO_AUTH_TOKEN;
 
-const db = new Database(dbPath);
+const db = isTurso
+    ? new Database(process.env.TURSO_DATABASE_URL, {
+          authToken: process.env.TURSO_AUTH_TOKEN
+      })
+    : new Database(path.join(__dirname, "airflow.db"));
 
-db.pragma("journal_mode = WAL");
-
+if (!isTurso) {
+    db.pragma("journal_mode = WAL");
+}
 db.exec(`
     CREATE TABLE IF NOT EXISTS bookings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -4092,7 +4099,7 @@ server.listen(
         );
 
         console.log(
-            `💾 Database: ${dbPath}`
+            `💾 Database: ${isTurso ? "Turso Cloud" : path.join(__dirname, "airflow.db")}`
         );
 
         console.log(
