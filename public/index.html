@@ -1,0 +1,2980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AirFlow — Airline Booking System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- =========================================================
+     LOGIN SCREEN
+========================================================== -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-background">
+        <div class="login-glow login-glow-one"></div>
+        <div class="login-glow login-glow-two"></div>
+    </div>
+
+    <div class="login-card">
+
+        <div class="login-brand">
+
+            <div class="login-logo">
+                ✈
+            </div>
+
+            <div>
+                <h1>AirFlow</h1>
+                <p>Airline Booking System</p>
+            </div>
+
+        </div>
+
+        <div class="login-heading">
+            <span>SECURE ACCESS</span>
+
+            <h2>
+                Welcome Back
+            </h2>
+
+            <p>
+                Sign in to continue to AirFlow Operations.
+            </p>
+        </div>
+
+        <form
+            id="loginForm"
+            class="login-form"
+        >
+
+            <div class="login-field">
+
+                <label for="loginUsername">
+                    Username
+                </label>
+
+                <div class="login-input-wrap">
+
+                    <span class="login-input-icon">
+                        👤
+                    </span>
+
+                    <input
+                        id="loginUsername"
+                        type="text"
+                        autocomplete="username"
+                        placeholder="Enter username"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="login-field">
+
+                <label for="loginPassword">
+                    Password
+                </label>
+
+                <div class="login-input-wrap">
+
+                    <span class="login-input-icon">
+                        🔒
+                    </span>
+
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        autocomplete="current-password"
+                        placeholder="Enter password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        id="toggleLoginPassword"
+                        class="password-toggle"
+                        aria-label="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="loginError"
+                class="login-error hidden"
+            ></div>
+
+
+            <button
+                type="submit"
+                id="loginButton"
+                class="login-button"
+            >
+                <span id="loginButtonText">
+                    Sign In
+                </span>
+
+                <span class="login-arrow">
+                    →
+                </span>
+            </button>
+
+        </form>
+
+
+        <div class="login-security">
+            🔐 Authorized staff access only
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="app auth-locked"
+    id="mainApp"
+>
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo-area">
+            <div class="logo">
+
+                <div class="logo-icon">
+                    ✈
+                </div>
+
+                <div class="logo-text">
+                    <h1>AirFlow</h1>
+                    <p>Airline Booking System</p>
+                </div>
+
+            </div>
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <div class="menu-label">
+                Main Menu
+            </div>
+
+            <button
+                class="menu-item active"
+                id="dashboardMenu"
+                onclick="showDashboard()">
+
+                <span class="menu-icon">▦</span>
+                Dashboard
+
+            </button>
+
+            <button
+                class="menu-item"
+                id="newBookingMenu"
+                onclick="showBookingForm()">
+
+                <span class="menu-icon">＋</span>
+                New Booking
+
+            </button>
+
+            <button
+                class="menu-item"
+                id="bookingsMenu"
+                onclick="showBookingManagement()">
+
+                <span class="menu-icon">☷</span>
+                Bookings
+
+            </button>
+
+            <button
+                class="menu-item"
+                id="customersMenu"
+                onclick="showCustomerManagement()">
+
+                <span class="menu-icon">👤</span>
+                Customers
+
+            </button>
+
+            <!-- FINANCE -->
+
+            <button
+                class="menu-item"
+                id="financeMenu"
+                onclick="showFinanceDashboard()">
+
+                <span class="menu-icon">💰</span>
+                Finance
+
+            </button>
+
+            <button class="menu-item" id="staffMenu">
+    <span class="menu-icon">👥</span>
+    <span>Staff</span>
+</button>
+
+        </nav>
+
+
+        <div class="connection">
+
+            <span
+                class="status-dot"
+                id="connectionDot">
+            </span>
+
+            <div>
+                <strong id="connectionText">
+                    System Online
+                </strong>
+
+                <small id="connectionSubtext">
+                    Real-time connected
+                </small>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+        <div class="main-content">
+
+
+            <!-- =================================================
+                 DASHBOARD
+            ================================================== -->
+
+            <section id="dashboardView">
+
+                <div class="page-header">
+
+                    <div class="page-header-left">
+
+                        <div class="eyebrow">
+                            AirFlow Operations
+                        </div>
+
+                        <h1 class="page-title">
+                            Dashboard
+                        </h1>
+
+                        <p class="page-description">
+                            Monitor your airline bookings and sales.
+                        </p>
+
+                    </div>
+
+
+                    <div class="header-right">
+
+                        <div class="live-status">
+
+                            <span class="dot"></span>
+
+                            LIVE
+
+                            <span id="clock">
+                                --:--:-- --
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATISTICS -->
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            🎫
+                        </div>
+
+                        <div class="stat-info">
+
+                            <div class="stat-label">
+                                Total Bookings
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="totalBookings">
+                                0
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            💰
+                        </div>
+
+                        <div class="stat-info">
+
+                            <div class="stat-label">
+                                Total Sales
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="totalSales">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            📈
+                        </div>
+
+                        <div class="stat-info">
+
+                            <div class="stat-label">
+                                Total Profit
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="totalProfit">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            👥
+                        </div>
+
+                        <div class="stat-info">
+
+                            <div class="stat-label">
+                                Passengers
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="totalPassengers">
+                                0
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECENT BOOKINGS -->
+
+                <div class="recent-bookings">
+
+                    <div class="recent-heading">
+
+                        <div>
+
+                            <h2>
+                                Recent Bookings
+                            </h2>
+
+                            <p>
+                                Latest reservations
+                            </p>
+
+                        </div>
+
+                        <div class="button-group">
+
+                            <button
+                                class="secondary-button"
+                                onclick="showBookingManagement()">
+
+                                View All Bookings
+
+                            </button>
+
+                            <button
+                                class="primary-button"
+                                onclick="addTestBooking()">
+
+                                + Test Booking
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="table-container">
+
+                            <table>
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Booking ID
+                                        </th>
+
+                                        <th>
+                                            PNR
+                                        </th>
+
+                                        <th>
+                                            Passenger
+                                        </th>
+
+                                        <th>
+                                            Airline
+                                        </th>
+
+                                        <th>
+                                            Route
+                                        </th>
+
+                                        <th>
+                                            Travel Date
+                                        </th>
+
+                                        <th>
+                                            Selling
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+
+                                        <th>
+                                            Action
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="bookingTableBody">
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 NEW BOOKING
+            ================================================== -->
+
+            <section
+                id="bookingFormView"
+                class="hidden">
+
+                <div class="page-header">
+
+                    <div class="page-header-left">
+
+                        <div class="eyebrow">
+                            AirFlow Operations
+                        </div>
+
+                        <h1 class="page-title">
+                            New Booking
+                        </h1>
+
+                        <p class="page-description">
+                            Create a new airline reservation.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    id="bookingForm"
+                    class="form-card">
+
+
+                    <!-- CUSTOMER -->
+
+                    <div class="form-section">
+
+                        <h2 class="form-section-title">
+                            Passenger Information
+                        </h2>
+
+                        <p class="form-section-description">
+                            Enter the customer's contact and passenger details.
+                        </p>
+
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Passenger Name
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    id="passengerName"
+                                    class="form-control"
+                                    type="text"
+                                    required
+                                    placeholder="Full passenger name">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Phone
+                                </label>
+
+                                <input
+                                    id="phone"
+                                    class="form-control"
+                                    type="tel"
+                                    placeholder="+92 300 1234567">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Email
+                                </label>
+
+                                <input
+                                    id="email"
+                                    class="form-control"
+                                    type="email"
+                                    placeholder="customer@email.com">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Number of Passengers
+                                </label>
+
+                                <input
+                                    id="passengerCount"
+                                    class="form-control"
+                                    type="number"
+                                    min="1"
+                                    value="1">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- FLIGHT -->
+
+                    <div class="form-section">
+
+                        <h2 class="form-section-title">
+                            Flight Information
+                        </h2>
+
+                        <p class="form-section-description">
+                            Enter the airline and flight itinerary.
+                        </p>
+
+
+                        <div class="form-grid three">
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Airline
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    id="airlineName"
+                                    class="form-control"
+                                    type="text"
+                                    required
+                                    placeholder="e.g. PIA">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Flight Number
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    id="flightNumber"
+                                    class="form-control"
+                                    type="text"
+                                    required
+                                    placeholder="e.g. PK-203">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Travel Date
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    id="travelDate"
+                                    class="form-control"
+                                    type="date"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    From
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    id="fromAirport"
+                                    class="form-control"
+                                    type="text"
+                                    maxlength="3"
+                                    required
+                                    placeholder="LHE">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    To
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    id="toAirport"
+                                    class="form-control"
+                                    type="text"
+                                    maxlength="3"
+                                    required
+                                    placeholder="DXB">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Cabin Class
+                                </label>
+
+                                <select
+                                    id="cabinClass"
+                                    class="form-control">
+
+                                    <option value="Economy">
+                                        Economy
+                                    </option>
+
+                                    <option value="Premium Economy">
+                                        Premium Economy
+                                    </option>
+
+                                    <option value="Business">
+                                        Business
+                                    </option>
+
+                                    <option value="First">
+                                        First
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="route-preview">
+
+                            <div class="route-preview-item">
+
+                                <span>
+                                    From
+                                </span>
+
+                                <strong id="previewFrom">
+                                    ---
+                                </strong>
+
+                            </div>
+
+
+                            <div class="route-preview-arrow">
+                                →
+                            </div>
+
+
+                            <div class="route-preview-item">
+
+                                <span>
+                                    To
+                                </span>
+
+                                <strong id="previewTo">
+                                    ---
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- FINANCIAL -->
+
+                    <div class="form-section">
+
+                        <h2 class="form-section-title">
+                            Financial Information
+                        </h2>
+
+                        <p class="form-section-description">
+                            Enter your cost, selling price and payment information.
+                        </p>
+
+
+                        <div class="form-grid four">
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Cost Price
+                                </label>
+
+                                <input
+                                    id="costPrice"
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value="0">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Selling Price
+                                </label>
+
+                                <input
+                                    id="sellingPrice"
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value="0">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Amount Paid
+                                </label>
+
+                                <input
+                                    id="amountPaid"
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value="0">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Payment Status
+                                </label>
+
+                                <select
+                                    id="paymentStatus"
+                                    class="form-control">
+
+                                    <option value="Unpaid">
+                                        Unpaid
+                                    </option>
+
+                                    <option value="Partial">
+                                        Partial
+                                    </option>
+
+                                    <option value="Paid">
+                                        Paid
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="financial-preview">
+
+                            <div class="financial-box">
+
+                                <span>
+                                    Cost
+                                </span>
+
+                                <strong id="previewCost">
+                                    $0.00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="financial-box">
+
+                                <span>
+                                    Selling
+                                </span>
+
+                                <strong id="previewSelling">
+                                    $0.00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="financial-box profit">
+
+                                <span>
+                                    Profit
+                                </span>
+
+                                <strong id="previewProfit">
+                                    $0.00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="financial-box balance">
+
+                                <span>
+                                    Balance
+                                </span>
+
+                                <strong id="previewBalance">
+                                    $0.00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-section">
+
+                        <h2 class="form-section-title">
+                            Booking Status
+                        </h2>
+
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Booking Status
+                                </label>
+
+                                <select
+                                    id="bookingStatus"
+                                    class="form-control">
+
+                                    <option value="Confirmed">
+                                        Confirmed
+                                    </option>
+
+                                    <option value="Pending">
+                                        Pending
+                                    </option>
+
+                                    <option value="Cancelled">
+                                        Cancelled
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            onclick="showDashboard()">
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            id="createBookingButton">
+
+                            Create Booking
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 CUSTOMER MANAGEMENT
+            ================================================== -->
+
+            <section
+                id="customerManagementView"
+                class="hidden">
+
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <div class="eyebrow">
+                            AirFlow Operations
+                        </div>
+                        <h1 class="page-title">Customers</h1>
+                        <p class="page-description">Manage customer contacts and view complete booking history.</p>
+                    </div>
+
+                    <div class="header-right">
+                        <button
+                            class="primary-button"
+                            onclick="openAddCustomer()">
+                            + Add Customer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="management-toolbar customer-toolbar">
+
+                    <div class="search-box">
+
+                        <span class="search-icon">
+                            🔍
+                        </span>
+
+                        <input
+                            id="customerSearch"
+                            type="search"
+                            placeholder="Search customer ID, name, phone or email...">
+
+                    </div>
+
+                    <div
+                        class="results-count"
+                        id="customerResultsCount">
+                        0 customers
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="table-container">
+
+                        <table class="customer-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Customer ID
+                                    </th>
+
+                                    <th>
+                                        Customer
+                                    </th>
+
+                                    <th>
+                                        Phone
+                                    </th>
+
+                                    <th>
+                                        Email
+                                    </th>
+
+                                    <th>
+                                        Bookings
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="customerTableBody"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+            <section class="view" id="staffManagementView" style="display: none;">
+    <div class="page-header">
+        <div>
+            <div class="eyebrow">ADMINISTRATION</div>
+            <h1>Staff Management</h1>
+            <p>Create and manage worker accounts.</p>
+        </div>
+
+        <button class="primary-button" id="addStaffButton">
+            + Add Staff
+        </button>
+    </div>
+
+    <div class="management-card">
+        <div class="table-wrapper">
+            <table class="management-table">
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>USERNAME</th>
+                        <th>ROLE</th>
+                        <th>STATUS</th>
+                        <th>CREATED</th>
+                    </tr>
+                </thead>
+
+                <tbody id="staffTableBody">
+                    <tr>
+                        <td colspan="5">Loading staff...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ADD STAFF MODAL -->
+<div class="modal" id="addStaffModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <div class="eyebrow">ADMINISTRATION</div>
+                <h2>Add Staff Account</h2>
+            </div>
+
+            <button class="modal-close" id="closeAddStaffModal">
+                ×
+            </button>
+        </div>
+
+        <form id="addStaffForm">
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="staffName">Full Name</label>
+                    <input
+                        type="text"
+                        id="staffName"
+                        required
+                        placeholder="e.g. Ali Khan"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="staffUsername">Username</label>
+                    <input
+                        type="text"
+                        id="staffUsername"
+                        required
+                        placeholder="e.g. ali"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="staffPassword">Password</label>
+                    <input
+                        type="password"
+                        id="staffPassword"
+                        required
+                        minlength="6"
+                        placeholder="Minimum 6 characters"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="staffRole">Role</label>
+                    <select id="staffRole">
+                        <option value="worker">Worker</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div
+                id="staffFormError"
+                style="display: none; margin-top: 14px;"
+            ></div>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelAddStaff"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveStaffButton"
+                >
+                    Create Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+            <!-- =================================================
+                 BOOKING MANAGEMENT
+            ================================================== -->
+
+            <section
+                id="bookingManagementView"
+                class="hidden">
+
+                <div class="page-header">
+
+                    <div class="page-header-left">
+
+                        <div class="eyebrow">
+                            AirFlow Operations
+                        </div>
+
+                        <h1 class="page-title">
+                            Booking Management
+                        </h1>
+
+                        <p class="page-description">
+                            Search, view and manage your reservations.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="management-toolbar">
+
+                    <div class="search-box">
+
+                        <span class="search-icon">
+                            🔍
+                        </span>
+
+                        <input
+                            id="bookingSearch"
+                            type="search"
+                            placeholder="Search booking ID, PNR, passenger, airline...">
+
+                    </div>
+
+
+                    <select
+    id="bookingStatusFilter"
+    class="filter-select">
+
+    <option value="">
+        All Statuses
+    </option>
+
+    <option value="Confirmed">
+        Confirmed
+    </option>
+
+    <option value="Pending">
+        Pending
+    </option>
+
+    <option value="Cancelled">
+        Cancelled
+    </option>
+
+</select>
+
+
+                    <div
+                        class="results-count"
+                        id="resultsCount">
+
+                        0 bookings
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Booking ID
+                                    </th>
+
+                                    <th>
+                                        PNR
+                                    </th>
+
+                                    <th>
+                                        Passenger
+                                    </th>
+
+                                    <th>
+                                        Airline
+                                    </th>
+
+                                    <th>
+                                        Route
+                                    </th>
+
+                                    <th>
+                                        Travel Date
+                                    </th>
+
+                                    <th>
+                                        Selling
+                                    </th>
+
+                                    <th>
+                                        Profit
+                                    </th>
+
+                                    <th>
+                                        Payment
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="managementTableBody">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 FINANCE DASHBOARD
+            ================================================== -->
+
+            <section
+                id="financeView"
+                class="hidden">
+
+                <div class="page-header">
+
+                    <div class="page-header-left">
+
+                        <div class="eyebrow">
+                            AirFlow Accounts
+                        </div>
+
+                        <h1 class="page-title">
+                            Finance
+                        </h1>
+
+                        <p class="page-description">
+                            Monitor sales, costs, profit, collections and outstanding balances.
+                        </p>
+
+                    </div>
+
+                    <div class="header-right">
+
+                        <div class="finance-period-badge">
+                            Live Financial Overview
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FINANCIAL SUMMARY -->
+
+                <div class="finance-stats-grid">
+
+                    <div class="finance-stat-card">
+
+                        <div class="finance-stat-icon">
+                            💰
+                        </div>
+
+                        <div>
+
+                            <div class="finance-stat-label">
+                                Total Sales
+                            </div>
+
+                            <div
+                                class="finance-stat-value"
+                                id="financeTotalSales">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="finance-stat-card">
+
+                        <div class="finance-stat-icon">
+                            🧾
+                        </div>
+
+                        <div>
+
+                            <div class="finance-stat-label">
+                                Total Cost
+                            </div>
+
+                            <div
+                                class="finance-stat-value"
+                                id="financeTotalCost">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="finance-stat-card profit">
+
+                        <div class="finance-stat-icon">
+                            📈
+                        </div>
+
+                        <div>
+
+                            <div class="finance-stat-label">
+                                Total Profit
+                            </div>
+
+                            <div
+                                class="finance-stat-value"
+                                id="financeTotalProfit">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="finance-stat-card collected">
+
+                        <div class="finance-stat-icon">
+                            💵
+                        </div>
+
+                        <div>
+
+                            <div class="finance-stat-label">
+                                Collected
+                            </div>
+
+                            <div
+                                class="finance-stat-value"
+                                id="financeCollected">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="finance-stat-card outstanding">
+
+                        <div class="finance-stat-icon">
+                            ⚠️
+                        </div>
+
+                        <div>
+
+                            <div class="finance-stat-label">
+                                Outstanding
+                            </div>
+
+                            <div
+                                class="finance-stat-value"
+                                id="financeOutstanding">
+                                $0.00
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="finance-stat-card">
+
+                        <div class="finance-stat-icon">
+                            🎫
+                        </div>
+
+                        <div>
+
+                            <div class="finance-stat-label">
+                                Active Bookings
+                            </div>
+
+                            <div
+                                class="finance-stat-value"
+                                id="financeActiveBookings">
+                                0
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PERIOD SUMMARY -->
+
+                <div class="finance-period-grid">
+
+                    <div class="card finance-period-card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <h2>
+                                    Today
+                                </h2>
+
+                                <p>
+                                    Financial activity created today
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="finance-mini-grid">
+
+                                <div>
+
+                                    <span>
+                                        Sales
+                                    </span>
+
+                                    <strong id="financeTodaySales">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Cost
+                                    </span>
+
+                                    <strong id="financeTodayCost">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Profit
+                                    </span>
+
+                                    <strong id="financeTodayProfit">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Collected
+                                    </span>
+
+                                    <strong id="financeTodayCollected">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card finance-period-card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <h2>
+                                    This Month
+                                </h2>
+
+                                <p>
+                                    Financial activity for the current month
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="finance-mini-grid">
+
+                                <div>
+
+                                    <span>
+                                        Sales
+                                    </span>
+
+                                    <strong id="financeMonthSales">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Cost
+                                    </span>
+
+                                    <strong id="financeMonthCost">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Profit
+                                    </span>
+
+                                    <strong id="financeMonthProfit">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Collected
+                                    </span>
+
+                                    <strong id="financeMonthCollected">
+                                        $0.00
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PAYMENT OVERVIEW -->
+
+                <div class="finance-bottom-grid">
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <h2>
+                                    Payment Overview
+                                </h2>
+
+                                <p>
+                                    Current payment status across active bookings
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="payment-overview-grid">
+
+                                <div class="payment-overview-item paid">
+
+                                    <span class="payment-overview-icon">
+                                        ✓
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Paid
+                                        </small>
+
+                                        <strong id="financePaidCount">
+                                            0
+                                        </strong>
+
+                                        <span id="financePaidAmount">
+                                            $0.00
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="payment-overview-item partial">
+
+                                    <span class="payment-overview-icon">
+                                        ◐
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Partial
+                                        </small>
+
+                                        <strong id="financePartialCount">
+                                            0
+                                        </strong>
+
+                                        <span id="financePartialAmount">
+                                            $0.00
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="payment-overview-item unpaid">
+
+                                    <span class="payment-overview-icon">
+                                        !
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Unpaid
+                                        </small>
+
+                                        <strong id="financeUnpaidCount">
+                                            0
+                                        </strong>
+
+                                        <span id="financeUnpaidAmount">
+                                            $0.00
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <h2>
+                                    Outstanding
+                                </h2>
+
+                                <p>
+                                    Money still due from customers
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="outstanding-summary">
+
+                                <div
+                                    class="outstanding-amount"
+                                    id="financeOutstandingLarge">
+                                    $0.00
+                                </div>
+
+                                <div class="outstanding-label">
+                                    Total customer balance
+                                </div>
+
+                                <div
+                                    class="outstanding-note"
+                                    id="financeOutstandingNote">
+                                    No outstanding balances
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECENT FINANCIAL ACTIVITY -->
+
+                <div class="card finance-activity-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h2>
+                                Recent Financial Activity
+                            </h2>
+
+                            <p>
+                                Latest active bookings and their financial position
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="secondary-button"
+                            onclick="showBookingManagement()">
+
+                            View Bookings
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Booking
+                                    </th>
+
+                                    <th>
+                                        Passenger
+                                    </th>
+
+                                    <th>
+                                        Selling
+                                    </th>
+
+                                    <th>
+                                        Cost
+                                    </th>
+
+                                    <th>
+                                        Profit
+                                    </th>
+
+                                    <th>
+                                        Paid
+                                    </th>
+
+                                    <th>
+                                        Balance
+                                    </th>
+
+                                    <th>
+                                        Payment
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="financeActivityBody">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================================
+     ADD CUSTOMER MODAL
+========================================================== -->
+
+<div
+    id="addCustomerModal"
+    class="modal-overlay hidden">
+
+    <div class="modal customer-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Add Customer
+                </h2>
+
+                <p>
+                    Create a customer record.
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeAddCustomer()">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form
+            id="addCustomerForm"
+            class="modal-body">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Full Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="customerName"
+                        class="form-control"
+                        required
+                        placeholder="Customer full name">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Phone
+                    </label>
+
+                    <input
+                        id="customerPhone"
+                        class="form-control"
+                        type="tel"
+                        placeholder="+92 300 1234567">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input
+                        id="customerEmail"
+                        class="form-control"
+                        type="email"
+                        placeholder="customer@email.com">
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeAddCustomer()">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveCustomerButton">
+
+                    Save Customer
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     EDIT CUSTOMER MODAL
+========================================================== -->
+
+<div
+    id="editCustomerModal"
+    class="modal-overlay hidden">
+
+    <div class="modal customer-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Edit Customer
+                </h2>
+
+                <p>
+                    Update customer contact information.
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeEditCustomer()">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form
+            id="editCustomerForm"
+            class="modal-body">
+
+            <input
+                type="hidden"
+                id="editCustomerId">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Customer ID
+                    </label>
+
+                    <input
+                        id="editCustomerCode"
+                        class="form-control"
+                        disabled>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Full Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="editCustomerName"
+                        class="form-control"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Phone
+                    </label>
+
+                    <input
+                        id="editCustomerPhone"
+                        class="form-control"
+                        type="tel">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input
+                        id="editCustomerEmail"
+                        class="form-control"
+                        type="email">
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeEditCustomer()">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="updateCustomerButton">
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     CUSTOMER DETAILS MODAL
+========================================================== -->
+
+<div
+    id="customerDetailsModal"
+    class="modal-overlay hidden">
+
+    <div class="modal large">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Customer Details
+                </h2>
+
+                <p>
+                    Customer information and booking history.
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeCustomerDetails()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="customerDetailsContent">
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="secondary-button"
+                onclick="closeCustomerDetails()">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     BOOKING DETAILS MODAL
+========================================================== -->
+
+<div
+    id="bookingDetailsModal"
+    class="modal-overlay hidden">
+
+    <div class="modal large">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Booking Details
+                </h2>
+
+                <p>
+                    Complete reservation information
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeBookingDetails()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="bookingDetailsContent">
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="secondary-button"
+                onclick="closeBookingDetails()">
+
+                Close
+
+            </button>
+
+            <button
+                class="primary-button"
+                id="ticketButton"
+                onclick="openTicket()">
+
+                🎫 View E-Ticket
+
+            </button>
+
+            <button
+                class="primary-button"
+                id="invoiceButton"
+                onclick="openInvoice()">
+
+                🧾 View Invoice
+
+            </button>
+
+            <button
+                class="edit-button"
+                id="editDetailsButton"
+                onclick="openEditBooking()">
+
+                Edit Booking
+
+            </button>
+
+            <button
+                class="success-button"
+                id="markPaidButton"
+                onclick="markBookingPaid()">
+
+                Mark Paid
+
+            </button>
+
+            <button
+                class="danger-button"
+                id="cancelBookingButton"
+                onclick="requestCancelBooking()">
+
+                Cancel Booking
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     EDIT BOOKING MODAL
+========================================================== -->
+
+<div
+    id="editBookingModal"
+    class="modal-overlay hidden">
+
+    <div class="modal large">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Edit Booking
+                </h2>
+
+                <p>
+                    Update reservation information
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeEditBooking()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="editBookingForm"
+            class="modal-body">
+
+
+            <div class="form-section">
+
+                <h2 class="form-section-title">
+                    Passenger Information
+                </h2>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Passenger Name
+                        </label>
+
+                        <input
+                            id="editPassengerName"
+                            class="form-control"
+                            type="text"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Phone
+                        </label>
+
+                        <input
+                            id="editPhone"
+                            class="form-control"
+                            type="tel">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input
+                            id="editEmail"
+                            class="form-control"
+                            type="email">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Passengers
+                        </label>
+
+                        <input
+                            id="editPassengers"
+                            class="form-control"
+                            type="number"
+                            min="1">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <h2 class="form-section-title">
+                    Flight Information
+                </h2>
+
+                <div class="form-grid three">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Airline
+                        </label>
+
+                        <input
+                            id="editAirline"
+                            class="form-control"
+                            type="text"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Flight Number
+                        </label>
+
+                        <input
+                            id="editFlightNumber"
+                            class="form-control"
+                            type="text"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Travel Date
+                        </label>
+
+                        <input
+                            id="editTravelDate"
+                            class="form-control"
+                            type="date"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            From
+                        </label>
+
+                        <input
+                            id="editFrom"
+                            class="form-control"
+                            type="text"
+                            maxlength="3"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            To
+                        </label>
+
+                        <input
+                            id="editTo"
+                            class="form-control"
+                            type="text"
+                            maxlength="3"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Cabin Class
+                        </label>
+
+                        <select
+                            id="editCabinClass"
+                            class="form-control">
+
+                            <option value="Economy">
+                                Economy
+                            </option>
+
+                            <option value="Premium Economy">
+                                Premium Economy
+                            </option>
+
+                            <option value="Business">
+                                Business
+                            </option>
+
+                            <option value="First">
+                                First
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <h2 class="form-section-title">
+                    Financial Information
+                </h2>
+
+                <div class="form-grid three">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Cost Price
+                        </label>
+
+                        <input
+                            id="editCostPrice"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Selling Price
+                        </label>
+
+                        <input
+                            id="editSellingPrice"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Amount Paid
+                        </label>
+
+                        <input
+                            id="editAmountPaid"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            step="0.01">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <h2 class="form-section-title">
+                    Booking Status
+                </h2>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Status
+                        </label>
+
+                        <select
+                            id="editStatus"
+                            class="form-control">
+
+                            <option value="Confirmed">
+                                Confirmed
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeEditBooking()">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveEditButton">
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     E-TICKET MODAL
+========================================================== -->
+
+<div
+    id="ticketModal"
+    class="modal-overlay hidden">
+
+    <div class="modal large">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    E-Ticket
+                </h2>
+
+                <p>
+                    AirFlow booking document
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeTicket()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="ticketContent">
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="secondary-button"
+                onclick="closeTicket()">
+
+                Close
+
+            </button>
+
+            <button
+                class="primary-button"
+                onclick="printTicket()">
+
+                🖨️ Print Ticket
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     CUSTOMER INVOICE MODAL
+========================================================== -->
+
+<div
+    id="invoiceModal"
+    class="modal-overlay hidden">
+
+    <div class="modal large">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Customer Invoice
+                </h2>
+
+                <p>
+                    Customer payment document
+                </p>
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeInvoice()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="invoiceContent">
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="secondary-button"
+                onclick="closeInvoice()">
+
+                Close
+
+            </button>
+
+            <button
+                class="primary-button"
+                onclick="printInvoice()">
+
+                🖨️ Print Invoice
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     CONFIRMATION MODAL
+========================================================== -->
+
+<div
+    id="confirmModal"
+    class="modal-overlay hidden">
+
+    <div class="modal">
+
+        <div class="confirm-box">
+
+            <div class="confirm-icon">
+                ⚠️
+            </div>
+
+            <h3 id="confirmTitle">
+                Confirm Action
+            </h3>
+
+            <p id="confirmMessage">
+                Are you sure?
+            </p>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="secondary-button"
+                onclick="closeConfirmModal()">
+
+                No, Go Back
+
+            </button>
+
+            <button
+                class="danger-button"
+                id="confirmActionButton">
+
+                Confirm
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================== -->
+
+<div id="toastContainer"></div>
+
+
+
+<!-- =========================================================
+     SOCKET.IO + APP
+========================================================== -->
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="flight-search.js"></script>
+<script src="app.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+node_modules/
+uploads/
+airflow.db
+airflow.db-shm
+airflow.db-wal
+.env
