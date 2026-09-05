@@ -9,107 +9,6 @@ const multer = require("multer");
 const http = require("http");
 const { Server } = require("socket.io");
 const Database = require("better-sqlite3");
-let turso = null;
-
-async function connectTurso() {
-    async function initializeTursoDatabase() {
-    if (!isTurso) {
-        return;
-    }
-
-    await connectTurso();
-    await turso.exec(`
-    CREATE TABLE IF NOT EXISTS bookings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        booking_id TEXT UNIQUE NOT NULL,
-        pnr TEXT,
-        passenger TEXT NOT NULL,
-        customer_id INTEGER,
-        phone TEXT,
-        email TEXT,
-        airline TEXT NOT NULL,
-        flight_number TEXT,
-        route TEXT NOT NULL,
-        travel_date TEXT NOT NULL,
-        cabin_class TEXT NOT NULL,
-        passengers INTEGER NOT NULL DEFAULT 1,
-        cost_price REAL NOT NULL DEFAULT 0,
-        selling_price REAL NOT NULL DEFAULT 0,
-        profit REAL NOT NULL DEFAULT 0,
-        payment_status TEXT NOT NULL DEFAULT 'Unpaid',
-        amount_paid REAL NOT NULL DEFAULT 0,
-        balance REAL NOT NULL DEFAULT 0,
-        status TEXT NOT NULL DEFAULT 'Confirmed',
-        created_by INTEGER,
-        approved_by INTEGER,
-        approved_at TEXT,
-        payment_proof TEXT,
-        payment_proof_uploaded_by INTEGER,
-        payment_proof_uploaded_at TEXT,
-        created_at TEXT NOT NULL
-    )
-`);
-await turso.exec(`
-    CREATE TABLE IF NOT EXISTS customers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        customer_code TEXT UNIQUE NOT NULL,
-        name TEXT NOT NULL,
-        phone TEXT,
-        email TEXT,
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
-    )
-`);
-
-await turso.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL,
-        password_salt TEXT NOT NULL,
-        name TEXT NOT NULL,
-        role TEXT NOT NULL DEFAULT 'worker',
-        active INTEGER NOT NULL DEFAULT 1,
-        created_at TEXT NOT NULL
-    )
-`);
-
-await turso.exec(`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        token_hash TEXT UNIQUE NOT NULL,
-        created_at TEXT NOT NULL,
-        expires_at TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )
-`);
-
-    console.log("☁️ Connected to Turso database");
-}
-    function usingTurso() {
-    return Boolean(
-        process.env.TURSO_DATABASE_URL &&
-        process.env.TURSO_AUTH_TOKEN
-    );
-}
-    if (
-        !process.env.TURSO_DATABASE_URL ||
-        !process.env.TURSO_AUTH_TOKEN
-    ) {
-        return null;
-    }
-
-    const { connect } =
-        await import("@tursodatabase/serverless");
-
-    turso = connect({
-        url: process.env.TURSO_DATABASE_URL,
-        authToken: process.env.TURSO_AUTH_TOKEN
-    });
-
-    return turso;
-}
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
@@ -229,9 +128,10 @@ const db = new Database(dbPath);
 
 db.pragma("journal_mode = WAL");
 
-const isTurso =
-    !!process.env.TURSO_DATABASE_URL &&
-    !!process.env.TURSO_AUTH_TOKEN;
+const isTurso = false;
+if (!isTurso) {
+    db.pragma("journal_mode = WAL");
+}
 db.exec(`
     CREATE TABLE IF NOT EXISTS bookings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -537,21 +437,16 @@ function verifyPassword(
    CREATE FIRST ADMIN AUTOMATICALLY
 ========================================================= */
 
-async function createInitialAdmin() {
+function createInitialAdmin() {
 
-    const existingAdmin = isTurso
-    ? await turso.prepare(`
-        SELECT id
-        FROM users
-        WHERE role = 'admin'
-        LIMIT 1
-    `).get()
-    : db.prepare(`
-        SELECT id
-        FROM users
-        WHERE role = 'admin'
-        LIMIT 1
-    `).get();
+    const existingAdmin =
+        db.prepare(`
+            SELECT id
+            FROM users
+            WHERE role = 'admin'
+            LIMIT 1
+        `)
+        .get();
 
 
     if (existingAdmin) {
@@ -572,30 +467,6 @@ async function createInitialAdmin() {
         );
 
 
-   const adminParams = [
-    "admin",
-    password.hash,
-    password.salt,
-    "Administrator",
-    "admin",
-    1,
-    new Date().toISOString()
-];
-
-if (isTurso) {
-    await turso.prepare(`
-        INSERT INTO users (
-            username,
-            password_hash,
-            password_salt,
-            name,
-            role,
-            active,
-            created_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(adminParams);
-} else {
     db.prepare(`
         INSERT INTO users (
             username,
@@ -606,9 +477,25 @@ if (isTurso) {
             active,
             created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(...adminParams);
-}
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+    `)
+    .run(
+        "admin",
+        password.hash,
+        password.salt,
+        "Administrator",
+        "admin",
+        1,
+        new Date().toISOString()
+    );
 
 
     console.log("");
@@ -658,7 +545,9 @@ function hashAuthToken(
 }
 
 
-async function createAuthSession(userId) {
+function createAuthSession(
+    userId
+) {
 
     const token =
         crypto
@@ -687,24 +576,6 @@ async function createAuthSession(userId) {
         );
 
 
-   const sessionParams = [
-    userId,
-    tokenHash,
-    createdAt.toISOString(),
-    expiresAt.toISOString()
-];
-
-if (isTurso) {
-    await turso.prepare(`
-        INSERT INTO auth_sessions (
-            user_id,
-            token_hash,
-            created_at,
-            expires_at
-        )
-        VALUES (?, ?, ?, ?)
-    `).run(sessionParams);
-} else {
     db.prepare(`
         INSERT INTO auth_sessions (
             user_id,
@@ -713,8 +584,13 @@ if (isTurso) {
             expires_at
         )
         VALUES (?, ?, ?, ?)
-    `).run(...sessionParams);
-}
+    `)
+    .run(
+        userId,
+        tokenHash,
+        createdAt.toISOString(),
+        expiresAt.toISOString()
+    );
 
 
     return token;
@@ -746,7 +622,7 @@ function getTokenFromRequest(
 }
 
 
-async function getLoggedInUser(
+function getLoggedInUser(
     req
 ) {
 
@@ -768,37 +644,34 @@ async function getLoggedInUser(
         );
 
 
-    const session = isTurso
-    ? await turso.prepare(`
-        SELECT
-            auth_sessions.id AS session_id,
-            auth_sessions.expires_at,
-            users.id,
-            users.username,
-            users.name,
-            users.role,
-            users.active
-        FROM auth_sessions
-        JOIN users
-            ON users.id = auth_sessions.user_id
-        WHERE auth_sessions.token_hash = ?
-        LIMIT 1
-    `).get([tokenHash])
-    : db.prepare(`
-        SELECT
-            auth_sessions.id AS session_id,
-            auth_sessions.expires_at,
-            users.id,
-            users.username,
-            users.name,
-            users.role,
-            users.active
-        FROM auth_sessions
-        JOIN users
-            ON users.id = auth_sessions.user_id
-        WHERE auth_sessions.token_hash = ?
-        LIMIT 1
-    `).get(tokenHash);
+    const session =
+        db.prepare(`
+            SELECT
+                auth_sessions.id
+                    AS session_id,
+
+                auth_sessions.expires_at,
+
+                users.id,
+                users.username,
+                users.name,
+                users.role,
+                users.active
+
+            FROM auth_sessions
+
+            JOIN users
+                ON users.id =
+                   auth_sessions.user_id
+
+            WHERE
+                auth_sessions.token_hash = ?
+
+            LIMIT 1
+        `)
+        .get(
+            tokenHash
+        );
 
 
     if (!session) {
@@ -827,17 +700,14 @@ async function getLoggedInUser(
         Date.now()
     ) {
 
-        if (isTurso) {
-    await turso.prepare(`
-        DELETE FROM auth_sessions
-        WHERE id = ?
-    `).run([session.session_id]);
-} else {
-    db.prepare(`
-        DELETE FROM auth_sessions
-        WHERE id = ?
-    `).run(session.session_id);
-}
+        db.prepare(`
+            DELETE FROM auth_sessions
+            WHERE id = ?
+        `)
+        .run(
+            session.session_id
+        );
+
 
         return null;
     }
@@ -859,13 +729,16 @@ async function getLoggedInUser(
 }
 
 
-async function requireLogin(
+function requireLogin(
     req,
     res,
     next
 ) {
+
     const user =
-    await getLoggedInUser(req);
+        getLoggedInUser(
+            req
+        );
 
 
     if (!user) {
@@ -887,14 +760,16 @@ async function requireLogin(
 }
 
 
-async function requireAdmin(
+function requireAdmin(
     req,
     res,
     next
 ) {
 
     const user =
-    await getLoggedInUser(req);
+        getLoggedInUser(
+            req
+        );
 
 
     if (!user) {
@@ -936,9 +811,7 @@ async function requireAdmin(
 
 app.post(
     "/api/auth/login",
-    async (req, res) => {
-
-
+    (req, res) => {
 
         try {
 
@@ -972,19 +845,16 @@ app.post(
             }
 
 
-            const user = isTurso
-    ? await turso.prepare(`
-        SELECT *
-        FROM users
-        WHERE LOWER(username) = ?
-        LIMIT 1
-    `).get([username])
-    : db.prepare(`
-        SELECT *
-        FROM users
-        WHERE LOWER(username) = ?
-        LIMIT 1
-    `).get(username);
+            const user =
+                db.prepare(`
+                    SELECT *
+                    FROM users
+                    WHERE LOWER(username) = ?
+                    LIMIT 1
+                `)
+                .get(
+                    username
+                );
 
 
             if (
@@ -1019,13 +889,12 @@ app.post(
                             "Invalid username or password"
                     });
             }
-    
 
 
             const token =
-    await createAuthSession(
-        user.id
-    );
+                createAuthSession(
+                    user.id
+                );
 
 
             res.json({
@@ -1097,7 +966,7 @@ app.get(
 app.post(
     "/api/auth/logout",
     requireLogin,
-    async (req, res) => {
+    (req, res) => {
 
         const token =
             getTokenFromRequest(
@@ -1105,28 +974,18 @@ app.post(
             );
 
 
-      if (token) {
+        if (token) {
 
-    if (isTurso) {
-
-        await turso.prepare(`
-            DELETE FROM auth_sessions
-            WHERE token_hash = ?
-        `).run([
-            hashAuthToken(token)
-        ]);
-
-    } else {
-
-        db.prepare(`
-            DELETE FROM auth_sessions
-            WHERE token_hash = ?
-        `)
-        .run(
-            hashAuthToken(token)
-        );
-    }
-}
+            db.prepare(`
+                DELETE FROM auth_sessions
+                WHERE token_hash = ?
+            `)
+            .run(
+                hashAuthToken(
+                    token
+                )
+            );
+        }
 
 
         res.json({
