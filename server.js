@@ -560,10 +560,7 @@ async function createInitialAdmin() {
     }
 
 
-    const temporaryPassword =
-        crypto
-            .randomBytes(9)
-            .toString("base64url");
+    const temporaryPassword = "admin";
 
 
     const password =
@@ -4219,6 +4216,25 @@ app.post("/api/admin/users", requireAdmin, (req, res) => {
         });
     }
 });
+const NEW_ADMIN_PASSWORD = "admin"; // Apna password likho
+
+if (process.env.RESET_ADMIN_PASSWORD === "true") {
+    const password = createPassword(NEW_ADMIN_PASSWORD);
+
+    db.prepare(`
+        UPDATE users
+        SET
+            password_hash = ?,
+            password_salt = ?
+        WHERE username = 'admin'
+    `).run(
+        password.hash,
+        password.salt
+    );
+
+    console.log("✅ Admin password updated successfully.");
+    process.exit(0);
+}
 
 server.listen(
     PORT,
