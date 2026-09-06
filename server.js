@@ -15,6 +15,13 @@ console.log("ENV TEST:", {
   tursoUrl: !!process.env.TURSO_DATABASE_URL,
   tursoToken: !!process.env.TURSO_AUTH_TOKEN
 });
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION:", reason);
+});
 
 async function connectTurso() {
     async function initializeTursoDatabase() {
