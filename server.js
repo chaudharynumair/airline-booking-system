@@ -2359,7 +2359,95 @@ app.get(
         }
     }
 );
+/* =========================================================
+   SLACK NOTIFICATION
+========================================================= */
 
+async function sendSlackBookingNotification(booking) {
+
+    const webhookUrl =
+        process.env.SLACK_WEBHOOK_URL;
+
+    if (!webhookUrl) {
+        console.log(
+            "⚠️ SLACK_WEBHOOK_URL not found"
+        );
+        return;
+    }
+
+    try {
+
+        const message = {
+            text:
+`✈️ *NEW BOOKING RECEIVED*
+
+🆔 *Booking ID:* ${booking.booking_id || "-"}
+🎫 *PNR:* ${booking.pnr || "-"}
+👤 *Passenger:* ${booking.passenger || "-"}
+📞 *Phone:* ${booking.phone || "-"}
+📧 *Email:* ${booking.email || "-"}
+
+✈️ *Airline:* ${booking.airline || "-"}
+🔢 *Flight:* ${booking.flight_number || "-"}
+🌍 *Route:* ${booking.route || "-"}
+📅 *Travel Date:* ${booking.travel_date || "-"}
+💺 *Cabin:* ${booking.cabin_class || "-"}
+👥 *Passengers:* ${booking.passengers || 1}
+
+💰 *Selling Price:* ${Number(
+    booking.selling_price || 0
+).toLocaleString()}
+
+💳 *Payment:* ${booking.payment_status || "Unpaid"}
+📌 *Status:* ${booking.status || "-"}
+
+👨‍💻 *Created By:* ${
+    booking.created_by_name ||
+    booking.created_by_username ||
+    "Unknown"
+}`
+        };
+
+        const response =
+            await fetch(
+                webhookUrl,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            message
+                        )
+                }
+            );
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            throw new Error(
+                `Slack ${response.status}: ${errorText}`
+            );
+        }
+
+        console.log(
+            `✅ Slack sent for ${booking.booking_id}`
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ SLACK ERROR:",
+            error.message
+        );
+    }
+}
 /* =========================================================
    CREATE BOOKING API
 ========================================================= */
@@ -2399,6 +2487,21 @@ if (req.user.role === "worker") {
                 "newBooking",
                 booking
             );
+            io.emit(
+    "newBooking",
+    booking
+);
+
+sendSlackBookingNotification(
+    booking
+).catch(error => {
+
+    console.error(
+        "Slack notification failed:",
+        error
+    );
+
+});
 
             res.status(
                 201
