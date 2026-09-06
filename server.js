@@ -10,6 +10,11 @@ const http = require("http");
 const { Server } = require("socket.io");
 const Database = require("better-sqlite3");
 let turso = null;
+console.log("ENV TEST:", {
+  slack: !!process.env.SLACK_WEBHOOK_URL,
+  tursoUrl: !!process.env.TURSO_DATABASE_URL,
+  tursoToken: !!process.env.TURSO_AUTH_TOKEN
+});
 
 async function connectTurso() {
     async function initializeTursoDatabase() {
